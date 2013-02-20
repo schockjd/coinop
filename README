@@ -1,0 +1,2 @@
+CoinOp -
+Uses Raspberry Pi GPIOs to monitor a coin acceptor and drive an HDMI switcher.
