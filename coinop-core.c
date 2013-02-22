@@ -10,6 +10,14 @@
 #include "coinop-config.h"
 #include "coinop.h"
 
+
+/******************************************************************************
+ * Static global vars.
+ ******************************************************************************/
+pthread_mutex_t seconds_mutex = PTHREAD_MUTEX_INITIALIZER;
+unsigned int seconds_remaining = 0;
+
+
 /******************************************************************************
  * Main - starts up the other threads, then waits for them to exit.
  ******************************************************************************/
@@ -39,12 +47,19 @@ int main (int argc, char **argv, char **envp) {
   }
 }
 
-void set_time(int seconds) {
+void set_time(unsigned int seconds) {
+  pthread_mutex_lock( &seconds_mutex );
+  seconds_remaining = seconds;
+  pthread_mutex_unlock( &seconds_mutex );
 }
 
-void add_time(int seconds) {
+void add_time(unsigned int seconds) {
+  pthread_mutex_lock( &seconds_mutex );
+  seconds_remaining+=seconds; //BUGBUG: need to check for overflow.
+  pthread_mutex_lock( &seconds_mutex );
 }
 
 int get_time_remaining() {
+  return seconds_remaining;
 }
 
