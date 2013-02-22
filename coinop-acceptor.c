@@ -6,6 +6,7 @@
 
 void *acceptor_thread_start(void *arg) {
  printf("Acceptor started\n");
- sleep(2);
+ add_time(3);
+ sleep(10);
  return NULL;
 }
