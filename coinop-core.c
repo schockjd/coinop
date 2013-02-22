@@ -38,3 +38,13 @@ int main (int argc, char **argv, char **envp) {
     }
   }
 }
+
+void set_time(int seconds) {
+}
+
+void add_time(int seconds) {
+}
+
+int get_time_remaining() {
+}
+
