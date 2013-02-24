@@ -60,6 +60,11 @@ int main (int argc, char **argv, char **envp) {
   }
 }
 
+
+
+/******************************************************************************
+ * set_time - sets the remaining play time to the specified value.
+ ******************************************************************************/
 void set_time(unsigned int seconds) {
   printf("set_time %d..", seconds);
   pthread_mutex_lock( &seconds_mutex );
@@ -68,6 +73,9 @@ void set_time(unsigned int seconds) {
   printf("done\n");
 }
 
+/******************************************************************************
+ * add_time - adds the specified number of second to the remaining time.
+ ******************************************************************************/
 void add_time(unsigned int seconds) {
   printf("add_time %d..", seconds);
   pthread_mutex_lock( &seconds_mutex );
@@ -76,10 +84,18 @@ void add_time(unsigned int seconds) {
   printf("done\n");
 }
 
+
+/******************************************************************************
+ * get_time_remaining - returns the number of seconds remaining.
+ ******************************************************************************/
 int get_time_remaining() {
   return seconds_remaining;
 }
 
+
+/******************************************************************************
+ * Called once per second by the clock thread - decrements the time remaining.
+ ******************************************************************************/
 void tick() {
   pthread_mutex_lock( &seconds_mutex );
   if (seconds_remaining > 0) {
@@ -89,6 +105,9 @@ void tick() {
   printf("tick... %d\n", seconds_remaining);
 }
 
+/******************************************************************************
+ * clock_thread_start - initializes the clock thread.
+ ******************************************************************************/
 void *clock_thread_start(void *arg) {
   printf("Clock Started.\n");
   while(1) {

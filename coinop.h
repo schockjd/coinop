@@ -11,3 +11,7 @@ void set_time(unsigned int seconds);
 void add_time(unsigned int seconds);
 int get_time_remaining();
 
+//gpio functions
+int gpio_set_value(unsigned int gpio, unsigned int value);
+int gpio_get_value(unsigned int gpio, unsigned int *value);
+int gpio_poll(unsigned int gpio, unsigned int timeout);
