@@ -8,7 +8,7 @@ OBJS=coinop-core.o \
      coinop-server.o
   
 
-coinop: $(OBJS)
+coinop: $(OBJS) coinop.h coinop-config.h
 	cc -lpthread -o coinop $(OBJS)
 
 .c.o:
