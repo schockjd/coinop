@@ -15,6 +15,8 @@
 /******************************************************************************
  * Static global vars.
  ******************************************************************************/
+//seconds_remaining is used on multiple threads; modification must
+//be protected by this mutex.
 pthread_mutex_t seconds_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned int seconds_remaining = 0;
 
@@ -106,12 +108,21 @@ void tick() {
 }
 
 /******************************************************************************
- * clock_thread_start - initializes the clock thread.
+ * clock_thread_start - manages the clock and manages the switch.
  ******************************************************************************/
 void *clock_thread_start(void *arg) {
+  int screen_active = 0;
   printf("Clock Started.\n");
   while(1) {
     usleep(1000000); //sleep 1 sec.
     tick();
+    if (screen_active && seconds_remaining == 0) {
+      screen_active = 0;
+      set_switcher(2);
+    }
+    if (screen_active && seconds_remaining != 0) {
+      screen_active = 1;
+      set_switcher(1);
+    }
   }
 }
