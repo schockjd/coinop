@@ -16,11 +16,11 @@ case "$1" in
     /usr/local/bin/gpio export 25 out
     /usr/local/bin/gpio edge 24 falling
     /usr/local/bin/gpio -g mode 24 up
-    /usr/local/bin/coin-op
+    /usr/local/bin/coinop
     ;;
   stop)
     echo "Stoping coin machine"
-    killall coin-op
+    killall coinop
     /usr/local/bin/gpio -g write 7 0
     /usr/local/bin/gpio -g write 8 0
     /usr/local/bin/gpio -g write 25 0

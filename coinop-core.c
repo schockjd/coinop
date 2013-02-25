@@ -33,7 +33,19 @@ void *clock_thread_start(void *arg);
  ******************************************************************************/
 int main (int argc, char **argv, char **envp) {
   pthread_t server, acceptor, clock;
-   int s;
+  int s, child_pid;
+
+  //
+  // daemonize
+  // 
+  child_pid = fork();
+  if (child_pid != 0) {
+    exit(0);
+  }
+
+  umask(0);
+  setsid();
+
 
   //setup the logmask for debug
 #if !DEBUG
