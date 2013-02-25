@@ -10,17 +10,19 @@
 #include "coinop-config.h"
 #include "coinop.h"
 
+
+void handleRequest(int socket);
+
 void *server_thread_start(void *arg) {
   int sock;
   struct sockaddr_in co_server;
-  struct sockaddr_in co_client;
 
   syslog(LOG_INFO, "server thread started");
   
   //
   // Initialize coin server socket
   //
-  if ((sock == socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+  if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
     perror("Failed to create socket"); 
     exit(1);
   }
@@ -41,7 +43,21 @@ void *server_thread_start(void *arg) {
     exit(1);
   }
 
-  while (1);  
+  while (1) {
+    handleRequest(sock); 
+  }  
   
   return NULL;
+}
+
+void handleRequest(int sock) {
+   struct sockaddr_in co_client;
+   char buffer[MAX_BUF];
+   int received, co_client_len;
+   co_client_len = sizeof (co_client);
+   if (received = recvfrom(sock, buffer, MAX_BUF, 0, (struct sockaddr *) &co_client, &co_client_len) < 0) {
+     perror("Failed to receive message");
+     return;
+   }
+   syslog(LOG_INFO, "Client connected: %s\n", inet_ntoa(co_client.sin_addr));
 }

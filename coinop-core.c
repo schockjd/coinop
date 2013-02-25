@@ -122,7 +122,6 @@ void tick() {
     seconds_remaining--;
   }
   pthread_mutex_unlock( &seconds_mutex );
-  syslog(LOG_INFO, "tick... %d", seconds_remaining);
 }
 
 /******************************************************************************
