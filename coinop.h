@@ -10,6 +10,8 @@ void *acceptor_thread_start(void *arg);
 void set_time(unsigned int seconds);
 void add_time(unsigned int seconds);
 int get_time_remaining();
+void force_on();
+void force_off();
 
 //gpio functions
 int gpio_set_value(unsigned int gpio, unsigned int value);

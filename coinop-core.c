@@ -16,10 +16,11 @@
 /******************************************************************************
  * Static global vars.
  ******************************************************************************/
-//seconds_remaining is used on multiple threads; modification must
+//seconds_remaining & clock_active are on multiple threads; modification must
 //be protected by this mutex.
 pthread_mutex_t seconds_mutex = PTHREAD_MUTEX_INITIALIZER;
 unsigned int seconds_remaining = 0;
+unsigned int clock_active = 0;
 
 /******************************************************************************
  * Forward Declarations
@@ -112,6 +113,27 @@ int get_time_remaining() {
   return seconds_remaining;
 }
 
+/*****************************************************************************
+ * force_on - forces the switch to 1
+ *****************************************************************************/
+void force_on() {
+  pthread_mutex_lock( &seconds_mutex );
+  seconds_remaining = 0;
+  clock_active = 0;
+  set_switcher(1);
+  pthread_mutex_unlock( &seconds_mutex);
+}
+
+/*****************************************************************************
+ * force_off - forces the switch to 2
+ *****************************************************************************/
+void force_off() {
+  pthread_mutex_lock( &seconds_mutex );
+  seconds_remaining = 0;
+  clock_active = 0;
+  set_switcher(2);
+  pthread_mutex_unlock( &seconds_mutex);
+}
 
 /******************************************************************************
  * Called once per second by the clock thread - decrements the time remaining.
@@ -121,6 +143,14 @@ void tick() {
   if (seconds_remaining > 0) {
     seconds_remaining--;
   }
+  if (clock_active && seconds_remaining == 0) {
+    clock_active = 0;
+    set_switcher(2);
+  }
+  if (!clock_active && seconds_remaining != 0) {
+    clock_active = 1;
+    set_switcher(1);
+  }
   pthread_mutex_unlock( &seconds_mutex );
 }
 
@@ -128,20 +158,9 @@ void tick() {
  * clock_thread_start - manages the clock and manages the switch.
  ******************************************************************************/
 void *clock_thread_start(void *arg) {
-  int screen_active = 0;
   syslog(LOG_INFO, "clock thread started");
   while(1) {
     usleep(1000000); //sleep 1 sec.
     tick();
-    if (screen_active && seconds_remaining == 0) {
-      screen_active = 0;
-      set_switcher(2);
-      syslog(LOG_INFO, "time out, switched to 2");
-    }
-    if (!screen_active && seconds_remaining != 0) {
-      screen_active = 1;
-      set_switcher(1);
-      syslog(LOG_INFO, "time added, switched to 1");
-    }
   }
 }
