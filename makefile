@@ -5,7 +5,7 @@ OBJS=coinop-core.o \
      coinop-gpio.o \
      coinop-acceptor.o \
      coinop-switcher.o \
-     coinop-server.o 
+     coinop-server.o
   
 
 coinop: $(OBJS)
@@ -15,5 +15,4 @@ coinop: $(OBJS)
 	cc -c $<
 
 clean:
-	rm $(OBJS)
-	rm coinop
+	rm -f $(OBJS) coinop
