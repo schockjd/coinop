@@ -15,3 +15,8 @@ int get_time_remaining();
 int gpio_set_value(unsigned int gpio, unsigned int value);
 int gpio_get_value(unsigned int gpio, unsigned int *value);
 int gpio_poll(unsigned int gpio, unsigned int lvl, unsigned int timeout);
+
+//switcher functions
+int set_switcher(unsigned int select);
+int get_switcher(unsigned int *select);
+

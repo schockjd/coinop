@@ -1,10 +1,19 @@
 
-coinop: coinop-core.o coinop-acceptor.o coinop-server.o coinop-gpio.o
-	cc -lpthread -o coinop coinop-core.o coinop-acceptor.o coinop-server.o
+
+#Object files to build
+OBJS=coinop-core.o \
+     coinop-gpio.o \
+     coinop-acceptor.o \
+     coinop-switcher.o \
+     coinop-server.o 
+  
+
+coinop: $(OBJS)
+	cc -lpthread -o coinop $(OBJS)
 
 .c.o:
 	cc -c $<
 
 clean:
-	rm *.o
+	rm $(OBJS)
 	rm coinop
