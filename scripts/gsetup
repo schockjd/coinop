@@ -1,0 +1,35 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:		gsetup
+# Required-Start:	$all
+# Required-Stop:
+# Default-Start:	2 3 4 5
+# Default-Stop:         0 1 6
+### END INIT INFO
+
+case "$1" in
+  start)
+    echo "Starting up coin machine"
+    /usr/local/bin/gpio export 7 out
+    /usr/local/bin/gpio export 8 out
+    /usr/local/bin/gpio export 25 out
+    /usr/local/bin/gpio edge 24 falling
+    /usr/local/bin/gpio -g mode 24 up
+    /usr/local/bin/coin-op
+    ;;
+  stop)
+    echo "Stoping coin machine"
+    killall coin-op
+    /usr/local/bin/gpio -g write 7 0
+    /usr/local/bin/gpio -g write 8 0
+    /usr/local/bin/gpio -g write 25 0
+    /usr/local/bin/gpio unexportall
+    ;;
+  *)
+    echo "Usage: /etc/init.d/gsetup {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
