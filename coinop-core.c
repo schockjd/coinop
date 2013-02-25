@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
+#include <syslog.h>
 
 #include "coinop-config.h"
 #include "coinop.h"
@@ -33,6 +34,13 @@ void *clock_thread_start(void *arg);
 int main (int argc, char **argv, char **envp) {
   pthread_t server, acceptor, clock;
    int s;
+
+  //setup the logmask for debug
+#if !DEBUG
+  setlogmask(setlogmask(0) & ~LOG_MASK(LOG_INFO));
+#endif
+
+  syslog(LOG_NOTICE, "CoinOp started");
 
   //Create the esrver and acceptor threads  
   s = pthread_create( &server, NULL, &server_thread_start, NULL);
@@ -68,22 +76,20 @@ int main (int argc, char **argv, char **envp) {
  * set_time - sets the remaining play time to the specified value.
  ******************************************************************************/
 void set_time(unsigned int seconds) {
-  printf("set_time %d..", seconds);
+  syslog(LOG_INFO, "set_time: %d seconds", seconds);
   pthread_mutex_lock( &seconds_mutex );
   seconds_remaining = seconds;
   pthread_mutex_unlock( &seconds_mutex );
-  printf("done\n");
 }
 
 /******************************************************************************
  * add_time - adds the specified number of second to the remaining time.
  ******************************************************************************/
 void add_time(unsigned int seconds) {
-  printf("add_time %d..", seconds);
+  syslog(LOG_INFO, "add_time: %d seconds", seconds);
   pthread_mutex_lock( &seconds_mutex );
   seconds_remaining+=seconds; //BUGBUG: need to check for overflow.
   pthread_mutex_unlock( &seconds_mutex );
-  printf("done\n");
 }
 
 
@@ -104,7 +110,7 @@ void tick() {
     seconds_remaining--;
   }
   pthread_mutex_unlock( &seconds_mutex );
-  printf("tick... %d\n", seconds_remaining);
+  syslog(LOG_INFO, "tick... %d", seconds_remaining);
 }
 
 /******************************************************************************
@@ -112,17 +118,19 @@ void tick() {
  ******************************************************************************/
 void *clock_thread_start(void *arg) {
   int screen_active = 0;
-  printf("Clock Started.\n");
+  syslog(LOG_INFO, "clock thread started");
   while(1) {
     usleep(1000000); //sleep 1 sec.
     tick();
     if (screen_active && seconds_remaining == 0) {
       screen_active = 0;
       set_switcher(2);
+      syslog(LOG_INFO, "time out, switched to 2");
     }
-    if (screen_active && seconds_remaining != 0) {
+    if (!screen_active && seconds_remaining != 0) {
       screen_active = 1;
       set_switcher(1);
+      syslog(LOG_INFO, "time added, switched to 1");
     }
   }
 }
