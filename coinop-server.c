@@ -9,7 +9,7 @@
 
 #include "coinop-config.h"
 #include "coinop.h"
-
+#include "coinop-server.h"
 
 void handleRequest(int socket);
 
@@ -51,13 +51,27 @@ void *server_thread_start(void *arg) {
 }
 
 void handleRequest(int sock) {
-   struct sockaddr_in co_client;
-   char buffer[MAX_BUF];
-   int received, co_client_len;
-   co_client_len = sizeof (co_client);
-   if (received = recvfrom(sock, buffer, MAX_BUF, 0, (struct sockaddr *) &co_client, &co_client_len) < 0) {
-     perror("Failed to receive message");
-     return;
-   }
-   syslog(LOG_INFO, "Client connected: %s\n", inet_ntoa(co_client.sin_addr));
+  struct sockaddr_in co_client;
+  char buffer[MAX_BUF];
+  int received, co_client_len;
+  co_client_len = sizeof (co_client);
+  if (received = recvfrom(sock, buffer, MAX_BUF, 0, (struct sockaddr *) &co_client, &co_client_len) <= 0) {
+    return;
+  }
+  syslog(LOG_INFO, "Client connected: %s", inet_ntoa(co_client.sin_addr));
+  switch (buffer[0]) {
+    case CMD_TURN_ON:
+      syslog(LOG_INFO, "executing turn-on request");
+      force_on();
+      break;
+    case CMD_TURN_OFF:
+      syslog(LOG_INFO, "executing turn-off request");
+      force_off();
+      break;
+    case CMD_SET_TIME:
+    case CMD_ADD_TIME:
+    case CMD_GET_TIME: 
+    default:
+      syslog(LOG_INFO, "unimplemented server command 0x%02x", buffer[0]);
+  }
 }
