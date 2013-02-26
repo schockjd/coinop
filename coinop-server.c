@@ -50,6 +50,9 @@ void *server_thread_start(void *arg) {
   return NULL;
 }
 
+/*****************************************************************************
+ * handleRequest - deals with client requests to the coinop server.
+ *****************************************************************************/
 void handleRequest(int sock) {
   struct sockaddr_in co_client;
   char buffer[MAX_BUF];

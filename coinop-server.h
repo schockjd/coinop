@@ -9,3 +9,14 @@
 #define CMD_SET_TIME  3
 #define CMD_ADD_TIME  4
 #define CMD_GET_TIME  5
+
+typedef struct {
+  char cmd;
+  char data[7];
+} co_request;
+
+typedef struct {
+  char rsp;
+  char data[7];
+} co_response;
+
