@@ -14,5 +14,9 @@ coinop: $(OBJS)
 .c.o:
 	cc -c $<
 
+coinop-server.o: coinop-server.h
+
+$(OBJS): coinop.h coinop-config.h
+
 clean:
 	rm -f $(OBJS) coinop
