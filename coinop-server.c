@@ -57,24 +57,35 @@ void handleRequest(int sock) {
   struct sockaddr_in co_client;
   char buffer[MAX_BUF];
   int received, co_client_len;
+  co_request *req;
+  co_response *rsp;
+
   co_client_len = sizeof (co_client);
   if (received = recvfrom(sock, buffer, MAX_BUF, 0, (struct sockaddr *) &co_client, &co_client_len) <= 0) {
     return;
   }
-  syslog(LOG_INFO, "Client connected: %s", inet_ntoa(co_client.sin_addr));
-  switch (buffer[0]) {
+  
+  syslog(LOG_INFO, "client connected: %s", inet_ntoa(co_client.sin_addr));
+  req = (co_request *)buffer;
+  switch (req->cmd) {
     case CMD_TURN_ON:
-      syslog(LOG_INFO, "executing turn-on request");
+      syslog(LOG_NOTICE, "executing turn-on request from %s", inet_ntoa(co_client.sin_addr));
       force_on();
       break;
     case CMD_TURN_OFF:
-      syslog(LOG_INFO, "executing turn-off request");
+      syslog(LOG_NOTICE, "executing turn-off request from %s", inet_ntoa(co_client.sin_addr));
       force_off();
       break;
     case CMD_SET_TIME:
+      syslog(LOG_NOTICE, "executing set-time request from %s", inet_ntoa(co_client.sin_addr));
+      break;
     case CMD_ADD_TIME:
+      syslog(LOG_NOTICE, "executing add-time request from %s", inet_ntoa(co_client.sin_addr));
+      break;
     case CMD_GET_TIME: 
+      syslog(LOG_NOTICE, "executing get-time request from %s", inet_ntoa(co_client.sin_addr));
+      break;
     default:
-      syslog(LOG_INFO, "unimplemented server command 0x%02x", buffer[0]);
+      syslog(LOG_NOTICE, "unimplemented server command 0x%02x from %s", req->cmd, inet_ntoa(co_client.sin_addr));
   }
 }
