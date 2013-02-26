@@ -9,11 +9,11 @@
 #define MAX_BUF 64
 
 int main(int argc, char *argv[]) {
-  int sock,i;
+  int sock, i, received, server_len;
   struct sockaddr_in co_server;
   char buffer[MAX_BUF];
 
-  if (argc != 4) { 
+  if (argc < 4) { 
     fprintf(stderr, "USAGE: %s <server_ip> <port> <data0> .. <datan>\n", argv[0]);
     exit(1);
   }
@@ -27,13 +27,26 @@ int main(int argc, char *argv[]) {
   co_server.sin_addr.s_addr = inet_addr(argv[1]);
   co_server.sin_port = htons(atoi(argv[2]));
 
-  for (i = 3; i < argc; i++) {
-    buffer[i-3] = (char)atoi(argv[i]);
+  printf("sending: ");
+  for (i = 0; i < argc-3; i++) {
+    buffer[i] = (char)atoi(argv[i+3]);
+    printf("0x%02x ", buffer[i]);
   }
+  printf("\n");
 
   if (sendto(sock, buffer, argc-3, 0, (struct sockaddr *) &co_server, sizeof (co_server)) != argc-3) {
     perror("Mismatch in sent bytes");
   }
+  server_len = sizeof(co_server);
+  if ( (received = recvfrom(sock, buffer, MAX_BUF, 0, (struct sockaddr *) &co_server, &server_len)) <= 0) {
+     perror("Error getting packet from server.");
+  }
+  printf("received: ");
+  for (i=0; i < received; i++) {
+    printf("0x%02x ", buffer[i]);
+  }
+  printf("\n");
+
   close(sock);
   exit(0);
 }

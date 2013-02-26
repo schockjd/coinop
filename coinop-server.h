@@ -10,13 +10,21 @@
 #define CMD_ADD_TIME  4
 #define CMD_GET_TIME  5
 
-typedef struct {
-  char cmd;
-  char data[7];
+typedef union {
+  struct {
+    char cmd;
+    char rsvd[3];
+    unsigned int payload;
+  };
+  char data[8];
 } co_request;
 
-typedef struct {
-  char rsp;
-  char data[7];
+typedef union {
+  struct {
+    char cmd;
+    char rsp;
+    char rsvd[2];
+    unsigned int payload;
+  };
+  char data[8];
 } co_response;
-
