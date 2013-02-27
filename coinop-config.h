@@ -22,3 +22,5 @@
 #define COIN_TIMEOUT (30*60)      /* token value, in seconds tokens are worth 30 minutes */
 
 #define MAX_BUF 64
+
+#define COINSERVER_PORT 41580
