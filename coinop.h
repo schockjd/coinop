@@ -10,6 +10,7 @@ void *acceptor_thread_start(void *arg);
 void set_time(unsigned int seconds);
 void add_time(unsigned int seconds);
 int get_time_remaining();
+int is_active();
 void force_on();
 void force_off();
 

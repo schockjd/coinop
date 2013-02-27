@@ -93,11 +93,16 @@ void handleRequest(int sock) {
       rsp.cmd = req.cmd;
       rsp.rsp = 0;
       break;
-    case CMD_GET_TIME: 
-      syslog(LOG_NOTICE, "executing get-time request from %s", inet_ntoa(co_client.sin_addr));
+    case CMD_GET_STATE: 
+      syslog(LOG_NOTICE, "executing get-state request from %s", inet_ntoa(co_client.sin_addr));
       rsp.cmd = req.cmd;
       rsp.rsp = 0;
       rsp.payload = get_time_remaining();
+      if (is_active()) {
+        rsp.active = 1;
+      } else {
+        rsp.active = 0;
+      }
       break;
     default:
       syslog(LOG_NOTICE, "unimplemented server command 0x%02x from %s", req.cmd, inet_ntoa(co_client.sin_addr));

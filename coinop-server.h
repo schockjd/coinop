@@ -8,7 +8,7 @@
 #define CMD_TURN_OFF  2
 #define CMD_SET_TIME  3
 #define CMD_ADD_TIME  4
-#define CMD_GET_TIME  5
+#define CMD_GET_STATE 5
 
 typedef union {
   struct {
@@ -23,7 +23,8 @@ typedef union {
   struct {
     char cmd;
     char rsp;
-    char rsvd[2];
+    char active;
+    char rsvd;
     unsigned int payload;
   };
   char data[8];

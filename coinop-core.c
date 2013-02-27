@@ -110,7 +110,22 @@ void add_time(unsigned int seconds) {
  * get_time_remaining - returns the number of seconds remaining.
  ******************************************************************************/
 int get_time_remaining() {
-  return seconds_remaining;
+  int remaining;
+  pthread_mutex_lock( &seconds_mutex );
+  remaining = seconds_remaining;
+  pthread_mutex_unlock( &seconds_mutex);
+  return remaining;
+}
+/******************************************************************************
+ * is_active - returns whether the switcher is active
+ ******************************************************************************/
+int is_active() {
+  int active;
+  pthread_mutex_lock( &seconds_mutex );
+  get_switcher( &active );
+  active = (active == 1);
+  pthread_mutex_unlock( &seconds_mutex );
+  return active;
 }
 
 /*****************************************************************************
